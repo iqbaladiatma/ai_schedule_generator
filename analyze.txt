@@ -1,0 +1,15 @@
+Analyzing AI.Schedule.Generator.App-2026...
+
+  error - lib\auth\google_auth.dart:2:8 - Target of URI doesn't exist: 'package:ai_schedule_generator/config/secret.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib\auth\google_auth.dart:5:13 - Undefined name 'webClientId'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\gemini_service.dart:2:8 - Target of URI doesn't exist: 'package:ai_schedule_generator/config/secret.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib\services\gemini_service.dart:7:32 - Const variables must be initialized with a constant value. Try changing the initializer to be a constant expression. - const_initialized_with_non_constant_value
+  error - lib\services\gemini_service.dart:7:32 - Undefined name 'geminiApiKey'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+   info - lib\main.dart:28:7 - 'useInheritedMediaQuery' is deprecated and shouldn't be used. Remove this parameter as it is now ignored. MaterialApp never introduces its own MediaQuery; the View widget takes care of that. This feature was deprecated after v3.7.0-29.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - lib\ui\home_screen.dart:111:40 - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext. - use_build_context_synchronously
+   info - lib\ui\home_screen.dart:116:38 - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext. - use_build_context_synchronously
+   info - lib\ui\home_screen.dart:183:27 - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - lib\ui\schedule_result_screen.dart:128:33 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - lib\ui\schedule_result_screen.dart:168:33 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+
+11 issues found.
