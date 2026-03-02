@@ -55,7 +55,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
     if (tipsSection.isEmpty) debugPrint('WARNING: tipsSection is EMPTY');
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFF0F7FF),
       extendBodyBehindAppBar: true,
       appBar: _buildAppBar(),
       body: Stack(
@@ -66,16 +66,60 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
             left: 0,
             right: 0,
             child: Container(
-              height: 250,
+              height: 260,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF6366F1),
-                    Color(0xFF8B5CF6),
-                    Color(0xFFA855F7),
+                    Color(0xFF1E3A8A),
+                    Color(0xFF2563EB),
+                    Color(0xFF3B82F6),
                   ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: -20,
+                    right: -30,
+                    child: Container(
+                      width: 130,
+                      height: 130,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withAlpha(10),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 30,
+                    left: -20,
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withAlpha(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Curved bottom
+          Positioned(
+            top: 230,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 50,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF0F7FF),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
                 ),
               ),
             ),
@@ -116,30 +160,55 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
       leading: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.white.withAlpha(30),
+          color: Colors.white.withAlpha(20),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.white.withAlpha(30),
+          ),
         ),
         child: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      title: const Text(
-        'Hasil Jadwal',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-        ),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(25),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+              Icons.event_note_rounded,
+              color: Colors.white,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Hasil Jadwal',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+        ],
       ),
       actions: [
         Container(
-          margin: const EdgeInsets.only(right: 8),
+          margin: const EdgeInsets.only(right: 4),
           decoration: BoxDecoration(
-            color: Colors.white.withAlpha(30),
+            color: Colors.white.withAlpha(20),
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withAlpha(30),
+            ),
           ),
           child: IconButton(
-            icon: const Icon(Icons.copy, color: Colors.white),
+            icon: const Icon(Icons.copy_rounded, color: Colors.white, size: 20),
             tooltip: "Salin Semua Teks",
             onPressed: () {
               Clipboard.setData(ClipboardData(text: widget.scheduleResult));
@@ -150,11 +219,14 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
         Container(
           margin: const EdgeInsets.only(right: 8),
           decoration: BoxDecoration(
-            color: Colors.white.withAlpha(30),
+            color: Colors.white.withAlpha(20),
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withAlpha(30),
+            ),
           ),
           child: IconButton(
-            icon: const Icon(Icons.calendar_month, color: Colors.white),
+            icon: const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 20),
             tooltip: "Ekspor ke Google Calendar",
             onPressed: () async {
               final sections = _splitScheduleAndTips(widget.scheduleResult);
@@ -170,10 +242,15 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(25),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withAlpha(15),
+            Colors.white.withAlpha(8),
+          ],
+        ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withAlpha(40),
+          color: Colors.white.withAlpha(25),
         ),
       ),
       child: Row(
@@ -193,9 +270,9 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              "Jadwal dan tips ini disusun otomatis oleh AI berdasarkan prioritas Anda.",
+              "Jadwal & tips disusun otomatis oleh AI berdasarkan prioritas Anda.",
               style: TextStyle(
-                color: Colors.white.withAlpha(230),
+                color: Colors.white.withAlpha(220),
                 fontSize: 13,
                 height: 1.5,
               ),
@@ -213,7 +290,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
           flex: 3,
           child: _buildScheduleCard(scheduleSection),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
         if (tipsSection.trim().isNotEmpty)
           Expanded(
             flex: 2,
@@ -231,9 +308,14 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6366F1).withAlpha(15),
+            color: const Color(0xFF2563EB).withAlpha(10),
             blurRadius: 20,
             offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withAlpha(6),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -247,13 +329,13 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF6366F1).withAlpha(20),
-                    const Color(0xFF8B5CF6).withAlpha(10),
+                    const Color(0xFF2563EB).withAlpha(12),
+                    const Color(0xFF3B82F6).withAlpha(6),
                   ],
                 ),
-                border: Border(
+                border: const Border(
                   bottom: BorderSide(
-                    color: const Color(0xFFE2E8F0),
+                    color: Color(0xFFE2E8F0),
                   ),
                 ),
               ),
@@ -263,12 +345,12 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                        colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
-                      Icons.schedule,
+                      Icons.schedule_rounded,
                       color: Colors.white,
                       size: 18,
                     ),
@@ -278,7 +360,30 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
                     'Jadwal Optimal',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E293B),
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withAlpha(15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_circle, size: 12, color: Color(0xFF10B981)),
+                        SizedBox(width: 4),
+                        Text(
+                          'AI Generated',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF10B981),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -310,9 +415,14 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFF59E0B).withAlpha(15),
+            color: const Color(0xFFF59E0B).withAlpha(10),
             blurRadius: 20,
             offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withAlpha(6),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -326,13 +436,13 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFFF59E0B).withAlpha(15),
+                    const Color(0xFFF59E0B).withAlpha(12),
                     const Color(0xFFFBBF24).withAlpha(5),
                   ],
                 ),
-                border: Border(
+                border: const Border(
                   bottom: BorderSide(
-                    color: const Color(0xFFE2E8F0),
+                    color: Color(0xFFE2E8F0),
                   ),
                 ),
               ),
@@ -347,7 +457,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
-                      Icons.lightbulb,
+                      Icons.lightbulb_rounded,
                       color: Colors.white,
                       size: 18,
                     ),
@@ -357,7 +467,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
                     'Tips Produktif',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E293B),
+                      color: const Color(0xFF0F172A),
                     ),
                   ),
                 ],
@@ -387,13 +497,13 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
           flex: 2,
           child: ElevatedButton.icon(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.refresh, size: 18),
+            icon: const Icon(Icons.refresh_rounded, size: 18),
             label: const Text(
-              "Buat Jadwal Baru",
+              "Buat Ulang",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1E293B),
+              backgroundColor: const Color(0xFF0F172A),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -408,12 +518,12 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
           child: Container(
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6366F1).withAlpha(60),
+                  color: const Color(0xFF2563EB).withAlpha(60),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -424,7 +534,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
                 final sections = _splitScheduleAndTips(widget.scheduleResult);
                 await _ensureLoggedInAndExport(sections.$1);
               },
-              icon: const Icon(Icons.calendar_month, size: 18),
+              icon: const Icon(Icons.calendar_month_rounded, size: 18),
               label: const Text(
                 "Export ke Calendar",
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -479,19 +589,19 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
       h1: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w800,
-        color: Color(0xFF1E293B),
+        color: Color(0xFF0F172A),
         letterSpacing: -0.5,
       ),
       h2: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF1E293B),
+        color: Color(0xFF0F172A),
         letterSpacing: -0.3,
       ),
       h3: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF6366F1),
+        color: Color(0xFF2563EB),
       ),
       tableBorder: TableBorder.all(
         color: const Color(0xFFE2E8F0),
@@ -500,36 +610,36 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
       ),
       tableHeadAlign: TextAlign.center,
       tablePadding: const EdgeInsets.all(12),
-      tableCellsDecoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+      tableCellsDecoration: const BoxDecoration(
+        color: Color(0xFFF8FAFC),
       ),
       tableColumnWidth: const FlexColumnWidth(),
       strong: const TextStyle(
         fontWeight: FontWeight.w700,
-        color: Color(0xFF1E293B),
+        color: Color(0xFF0F172A),
       ),
       em: const TextStyle(
         fontStyle: FontStyle.italic,
         color: Color(0xFF64748B),
       ),
       listBullet: const TextStyle(
-        color: Color(0xFF6366F1),
+        color: Color(0xFF2563EB),
       ),
       blockquote: const TextStyle(
         color: Color(0xFF64748B),
         fontStyle: FontStyle.italic,
       ),
-      blockquoteDecoration: BoxDecoration(
+      blockquoteDecoration: const BoxDecoration(
         border: Border(
           left: BorderSide(
-            color: Color(0xFF6366F1),
+            color: Color(0xFF2563EB),
             width: 4,
           ),
         ),
       ),
       code: TextStyle(
-        backgroundColor: const Color(0xFFF1F5F9),
-        color: const Color(0xFF6366F1),
+        backgroundColor: const Color(0xFFF0F4FF),
+        color: const Color(0xFF2563EB),
         fontSize: 13,
         fontFamily: 'monospace',
       ),
@@ -544,9 +654,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
       }
 
       var user = googleSignIn.currentUser;
-      if (user == null) {
-        user = await googleSignIn.signInSilently(suppressErrors: true);
-      }
+      user ??= await googleSignIn.signInSilently(suppressErrors: true);
       if (user == null) {
         user = await signInWithGoogle();
         if (user == null) {
@@ -561,7 +669,6 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
       ]);
 
       if (!alreadyHasScopes) {
-        // Need to request calendar scope authorization
         try {
           final bool isAuthorized = await googleSignIn.requestScopes([
             'https://www.googleapis.com/auth/calendar',
@@ -588,9 +695,8 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
         }
       }
 
-      // Try to get the authenticated client
       final client = await googleSignIn.authenticatedClient();
-      
+
       if (client == null) {
         if (mounted) {
           _showSnackBar('Gagal mendapatkan Client Autentikasi. Coba logout lalu login ulang.', isError: true);
@@ -635,7 +741,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
     final lines = markdown.split('\n');
     final List<gcal.Event> events = [];
     final today = DateTime.now();
-    const String timeZone = 'Asia/Jakarta'; // WIB (UTC+7)
+    const String timeZone = 'Asia/Jakarta';
 
     debugPrint('=== PARSING EVENTS ===');
     debugPrint('Today: ${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}');
@@ -655,7 +761,6 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
 
       final timePart = cols[0];
       final titlePart = cols[1];
-      // Get description/keterangan from 3rd column if available
       final descPart = cols.length >= 3 ? cols[2] : '';
 
       if (!timePart.contains('-')) continue;
@@ -683,7 +788,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
 
         final event = gcal.Event(
           summary: titlePart,
-          description: descPart.isNotEmpty 
+          description: descPart.isNotEmpty
               ? '$descPart\n\n📅 Dibuat oleh AI Schedule Generator'
               : '📅 Dibuat oleh AI Schedule Generator',
           start: gcal.EventDateTime(
@@ -694,7 +799,6 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
             dateTime: endDateTime,
             timeZone: timeZone,
           ),
-          // Grape/purple color to match app theme
           colorId: '9',
         );
         events.add(event);
@@ -702,7 +806,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen>
         continue;
       }
     }
-    
+
     debugPrint('Total events parsed: ${events.length}');
     return events;
   }

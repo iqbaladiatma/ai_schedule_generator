@@ -29,6 +29,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   late AnimationController _fabController;
   late Animation<double> _fabScale;
+  late AnimationController _headerController;
+  late Animation<double> _headerFade;
+  late Animation<Offset> _headerSlide;
 
   @override
   void initState() {
@@ -42,12 +45,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       curve: Curves.easeOutBack,
     );
 
+    _headerController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _headerFade = CurvedAnimation(
+      parent: _headerController,
+      curve: Curves.easeOut,
+    );
+    _headerSlide = Tween<Offset>(
+      begin: const Offset(0, -0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: Curves.easeOutCubic,
+    ));
+
     googleSignIn.onCurrentUserChanged.listen((account) {
       if (mounted) {
         setState(() => _currentUser = account);
       }
     });
-    
+
     // Attempt silent sign in but catch errors
     googleSignIn.signInSilently(suppressErrors: true).then((account) {
       if (account != null && mounted) {
@@ -59,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     _fabController.forward();
+    _headerController.forward();
   }
 
   @override
@@ -66,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     taskController.dispose();
     durationController.dispose();
     _fabController.dispose();
+    _headerController.dispose();
     super.dispose();
   }
 
@@ -138,27 +159,84 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFF0F7FF),
       extendBodyBehindAppBar: true,
       appBar: _buildAppBar(),
       body: Stack(
         children: [
-          // Gradient background
+          // Multi-layered gradient background
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
-              height: 300,
+              height: 320,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF6366F1),
-                    Color(0xFF8B5CF6),
-                    Color(0xFFA855F7),
+                    Color(0xFF1E3A8A),
+                    Color(0xFF2563EB),
+                    Color(0xFF3B82F6),
                   ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  // Decorative circles
+                  Positioned(
+                    top: -30,
+                    right: -30,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withAlpha(10),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 60,
+                    left: -50,
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withAlpha(8),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 20,
+                    right: 50,
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withAlpha(6),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Curved bottom overlay
+          Positioned(
+            top: 280,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 60,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF0F7FF),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
                 ),
               ),
             ),
@@ -167,10 +245,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 // Header section
-                _buildHeader(),
-                const SizedBox(height: 24),
+                SlideTransition(
+                  position: _headerSlide,
+                  child: FadeTransition(
+                    opacity: _headerFade,
+                    child: _buildHeader(),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 // Input form
                 _buildInputForm(),
                 const SizedBox(height: 16),
@@ -186,13 +270,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+              colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Color(0xFF6366F1).withAlpha(60),
-                blurRadius: 20,
+                color: const Color(0xFF2563EB).withAlpha(80),
+                blurRadius: 24,
                 offset: const Offset(0, 10),
               ),
             ],
@@ -212,10 +296,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   )
                 : const Icon(Icons.auto_awesome, color: Colors.white),
             label: Text(
-              isLoading ? "Memproses..." : "Buat Jadwal AI",
+              isLoading ? "Memproses..." : "✨ Buat Jadwal AI",
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
+                fontSize: 15,
               ),
             ),
           ),
@@ -228,27 +313,48 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      title: const Text(
-        'AI Schedule Generator',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-        ),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(25),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 10),
+          const Text(
+            'AI Schedule',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+        ],
       ),
       actions: [
         if (_currentUser == null)
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withAlpha(30),
+              color: Colors.white.withAlpha(20),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withAlpha(30),
+              ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.login, color: Colors.white),
+              icon: const Icon(Icons.login_rounded, color: Colors.white),
               tooltip: 'Login dengan Google',
               onPressed: () async {
                 if (kIsWeb) {
-                  // On web, show a dialog with Google renderButton
                   _showGoogleSignInDialog();
                 } else {
                   final account = await signInWithGoogle();
@@ -266,8 +372,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withAlpha(30),
+              color: Colors.white.withAlpha(20),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withAlpha(30),
+              ),
             ),
             child: PopupMenuButton<String>(
               icon: CircleAvatar(
@@ -281,11 +390,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           height: 32,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.person, color: Color(0xFF6366F1), size: 20);
+                            return const Icon(Icons.person, color: Color(0xFF2563EB), size: 20);
                           },
                         ),
                       )
-                    : const Icon(Icons.person, color: Color(0xFF6366F1), size: 20),
+                    : const Icon(Icons.person, color: Color(0xFF2563EB), size: 20),
               ),
               onSelected: (value) async {
                 if (value == 'logout') await signOutFromGoogle();
@@ -300,11 +409,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         _currentUser!.displayName ?? 'Pengguna',
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1E293B),
+                          color: Color(0xFF0F172A),
                         ),
                       ),
                       Text(
-                        _currentUser!.email ?? '',
+                        _currentUser!.email,
                         style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFF64748B),
@@ -342,16 +451,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           Row(
             children: [
+              // Greeting avatar/icon
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(25),
-                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white.withAlpha(20),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Colors.white.withAlpha(30),
+                  ),
                 ),
                 child: const Icon(
-                  Icons.schedule,
+                  Icons.calendar_today_rounded,
                   color: Colors.white,
-                  size: 28,
+                  size: 26,
                 ),
               ),
               const SizedBox(width: 16),
@@ -359,19 +472,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Selamat Datang!',
+                    Text(
+                      _currentUser != null
+                          ? 'Halo, ${_currentUser!.displayName?.split(' ').first ?? 'User'}! 👋'
+                          : 'Selamat Datang! 👋',
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: Colors.white.withAlpha(200),
                         fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       'Buat Jadwal Optimalmu',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
+                        fontSize: 22,
+                        letterSpacing: -0.5,
                       ),
                     ),
                   ],
@@ -380,30 +498,43 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           const SizedBox(height: 16),
+          // Info banner
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withAlpha(20),
-              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withAlpha(15),
+                  Colors.white.withAlpha(8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: Colors.white.withAlpha(40),
+                color: Colors.white.withAlpha(25),
               ),
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.lightbulb_outline,
-                  color: Colors.amber,
-                  size: 20,
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withAlpha(30),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.tips_and_updates_rounded,
+                    color: Colors.amber,
+                    size: 18,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Tambahkan tugas dengan prioritas, lalu AI akan menyusun jadwal optimal untukmu.',
+                    'Tambahkan tugas, lalu AI menyusun jadwal optimal untukmu.',
                     style: TextStyle(
-                      color: Colors.white.withAlpha(230),
+                      color: Colors.white.withAlpha(210),
                       fontSize: 13,
-                      height: 1.5,
+                      height: 1.4,
                     ),
                   ),
                 ),
@@ -423,9 +554,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6366F1).withAlpha(20),
+            color: const Color(0xFF2563EB).withAlpha(12),
             blurRadius: 30,
             offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: Colors.black.withAlpha(8),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -442,18 +578,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Section header
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(
-                        Icons.add_task,
+                        Icons.add_task_rounded,
                         color: Colors.white,
                         size: 18,
                       ),
@@ -463,12 +600,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       'Tambah Tugas Baru',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1E293B),
+                        color: const Color(0xFF0F172A),
                       ),
                     ),
+                    const Spacer(),
+                    // Task counter badge
+                    if (tasks.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2563EB).withAlpha(15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${tasks.length}',
+                          style: const TextStyle(
+                            color: Color(0xFF2563EB),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 20),
+                // Task name field
                 TextField(
                   controller: taskController,
                   decoration: InputDecoration(
@@ -478,18 +634,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       margin: const EdgeInsets.all(12),
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1).withAlpha(20),
+                        color: const Color(0xFF2563EB).withAlpha(15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
-                        Icons.task_alt,
+                        Icons.task_alt_rounded,
                         size: 18,
-                        color: Color(0xFF6366F1),
+                        color: Color(0xFF2563EB),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
+                // Duration + Priority row
                 Row(
                   children: [
                     Expanded(
@@ -504,13 +661,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             margin: const EdgeInsets.all(12),
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF8B5CF6).withAlpha(20),
+                              color: const Color(0xFF3B82F6).withAlpha(15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
                               Icons.timer_outlined,
                               size: 18,
-                              color: Color(0xFF8B5CF6),
+                              color: Color(0xFF3B82F6),
                             ),
                           ),
                         ),
@@ -523,16 +680,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
+                // Add button
                 SizedBox(
                   height: 52,
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _addTask,
-                    icon: const Icon(Icons.add, size: 20),
+                    icon: const Icon(Icons.add_rounded, size: 20),
                     label: const Text(
                       "Tambah ke Daftar",
                       style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                   ),
                 ),
@@ -547,11 +710,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildPrioritySelector() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: const Color(0xFFF0F4FF),
         borderRadius: BorderRadius.circular(16),
       ),
       child: DropdownButtonFormField<String>(
-        value: priority,
+        initialValue: priority,
         decoration: InputDecoration(
           labelText: "Prioritas",
           border: InputBorder.none,
@@ -560,11 +723,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             margin: const EdgeInsets.all(12),
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: _getPriorityColor().withAlpha(20),
+              color: _getPriorityColor().withAlpha(15),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              Icons.flag,
+              Icons.flag_rounded,
               size: 18,
               color: _getPriorityColor(),
             ),
@@ -576,7 +739,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           _buildPriorityItem("Rendah", const Color(0xFF10B981), Icons.low_priority),
         ],
         onChanged: (val) => setState(() => priority = val),
-        icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B)),
+        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF64748B)),
         dropdownColor: Colors.white,
       ),
     );
@@ -629,23 +792,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Daftar Tugas',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1E293B),
-                ),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.checklist_rounded,
+                    color: Color(0xFF2563EB),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Daftar Tugas',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withAlpha(15),
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF2563EB).withAlpha(15),
+                      const Color(0xFF3B82F6).withAlpha(10),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: const Color(0xFF2563EB).withAlpha(20),
+                  ),
                 ),
                 child: Text(
                   '${tasks.length} tugas',
                   style: const TextStyle(
-                    color: Color(0xFF6366F1),
+                    color: Color(0xFF2563EB),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -675,12 +856,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       child: Dismissible(
         key: Key('${task['name']}_$index'),
         direction: DismissDirection.endToStart,
         background: Container(
-          margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
@@ -692,7 +872,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.delete_outline, color: Colors.white),
+              Icon(Icons.delete_outline_rounded, color: Colors.white),
               SizedBox(width: 8),
               Text(
                 'Hapus',
@@ -714,36 +894,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: color.withAlpha(20),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                color: Colors.black.withAlpha(8),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
             border: Border.all(
-              color: color.withAlpha(30),
+              color: color.withAlpha(25),
               width: 1,
             ),
           ),
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
+              horizontal: 14,
+              vertical: 6,
             ),
             leading: Container(
-              width: 48,
-              height: 48,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [color, color.withAlpha(180)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(13),
                 boxShadow: [
                   BoxShadow(
                     color: color.withAlpha(40),
                     blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -752,7 +932,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   task['name'][0].toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -763,15 +943,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
-                color: Color(0xFF1E293B),
+                color: Color(0xFF0F172A),
               ),
             ),
             subtitle: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.timer_outlined,
                   size: 14,
-                  color: const Color(0xFF64748B),
+                  color: Color(0xFF64748B),
                 ),
                 const SizedBox(width: 4),
                 Text(
@@ -781,15 +961,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     fontSize: 13,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withAlpha(15),
+                    color: color.withAlpha(12),
                     borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: color.withAlpha(30),
+                    ),
                   ),
                   child: Text(
                     task['priority'],
@@ -804,8 +987,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
             trailing: IconButton(
               icon: Icon(
-                Icons.delete_outline,
+                Icons.close_rounded,
                 color: const Color(0xFFEF4444).withAlpha(150),
+                size: 20,
               ),
               onPressed: () {
                 setState(() => tasks.removeAt(index));
@@ -836,10 +1020,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         });
 
-        return WillPopScope(
-          onWillPop: () async {
+        return PopScope(
+          onPopInvokedWithResult: (didPop, result) {
             subscription.cancel();
-            return true;
           },
           child: AlertDialog(
             shape: RoundedRectangleBorder(
@@ -851,12 +1034,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
-                    Icons.login,
+                    Icons.login_rounded,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -882,7 +1065,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Official Google Sign-In renderButton widget
                 _buildGoogleRenderButton(),
               ],
             ),
@@ -893,9 +1075,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildGoogleRenderButton() {
-    // Use the official Google Identity Services renderButton from google_sign_in_web
-    // This renders the official Google-hosted sign-in button widget
-    // without using the deprecated popup-based signIn() method.
     if (kIsWeb) {
       return web.renderButton(
         configuration: web.GSIButtonConfiguration(
@@ -908,7 +1087,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       );
     }
-    // Fallback for non-web (should not reach here)
     return const SizedBox.shrink();
   }
 
@@ -917,24 +1095,46 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Empty state illustration
           Container(
-            width: 120,
-            height: 120,
+            width: 130,
+            height: 130,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF6366F1).withAlpha(20),
-                  const Color(0xFF8B5CF6).withAlpha(10),
+                  const Color(0xFF2563EB).withAlpha(15),
+                  const Color(0xFF3B82F6).withAlpha(8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: const Color(0xFF2563EB).withAlpha(15),
+              ),
             ),
-            child: const Icon(
-              Icons.inbox_outlined,
-              size: 50,
-              color: Color(0xFF6366F1),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Background decoration
+                Positioned(
+                  top: 15,
+                  right: 15,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF3B82F6).withAlpha(10),
+                    ),
+                  ),
+                ),
+                const Icon(
+                  Icons.inbox_rounded,
+                  size: 50,
+                  color: Color(0xFF2563EB),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -942,7 +1142,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             'Belum ada tugas',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF1E293B),
+              color: const Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 8),
@@ -951,6 +1151,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: const Color(0xFF64748B),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Quick hint
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2563EB).withAlpha(8),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFF2563EB).withAlpha(15),
+              ),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.touch_app_rounded,
+                  size: 16,
+                  color: Color(0xFF2563EB),
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Isi form di atas, lalu tekan Tambah',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF2563EB),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

@@ -2,7 +2,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'ui/home_screen.dart';
+import 'ui/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,6 @@ void main() {
       devices: [
         Devices.ios.iPhone15ProMax,
         Devices.ios.iPhoneSE,
-      //   Devices.android.samsungGalaxyS23Ultra,
       ],
       builder: (context) => const MainApp(),
     ),
@@ -43,15 +42,15 @@ class MainApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       title: 'AI Schedule Generator',
-      theme: _buildModernTheme(),
-      home: const HomeScreen(),
+      theme: _buildBlueTheme(),
+      home: const SplashScreen(),
     );
   }
 
-  ThemeData _buildModernTheme() {
-    const Color primaryColor = Color(0xFF6366F1);
-    const Color secondaryColor = Color(0xFF8B5CF6);
-    const Color accentColor = Color(0xFFEC4899);
+  ThemeData _buildBlueTheme() {
+    const Color primaryColor = Color(0xFF2563EB);     // Vibrant blue
+    const Color secondaryColor = Color(0xFF3B82F6);   // Medium blue
+    const Color accentColor = Color(0xFF60A5FA);       // Light blue accent
 
     return ThemeData(
       useMaterial3: true,
@@ -62,20 +61,20 @@ class MainApp extends StatelessWidget {
         tertiary: accentColor,
         brightness: Brightness.light,
       ),
-      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+      scaffoldBackgroundColor: const Color(0xFFF0F7FF),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
-        foregroundColor: Color(0xFF1E293B),
+        foregroundColor: Color(0xFF0F172A),
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          color: Color(0xFF1E293B),
+          color: Color(0xFF0F172A),
           fontSize: 20,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
         ),
         iconTheme: IconThemeData(
-          color: Color(0xFF6366F1),
+          color: Color(0xFF2563EB),
         ),
       ),
       cardTheme: CardThemeData(
@@ -84,11 +83,11 @@ class MainApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         color: Colors.white,
-        shadowColor: const Color(0xFF6366F1).withAlpha(25),
+        shadowColor: const Color(0xFF2563EB).withAlpha(25),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFFF1F5F9),
+        fillColor: const Color(0xFFF0F4FF),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -112,7 +111,7 @@ class MainApp extends StatelessWidget {
           color: Color(0xFF64748B),
           fontSize: 14,
         ),
-        prefixIconColor: const Color(0xFF6366F1),
+        prefixIconColor: const Color(0xFF2563EB),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -145,19 +144,19 @@ class MainApp extends StatelessWidget {
         headlineLarge: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w800,
-          color: Color(0xFF1E293B),
+          color: Color(0xFF0F172A),
           letterSpacing: -1,
         ),
         headlineMedium: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF1E293B),
+          color: Color(0xFF0F172A),
           letterSpacing: -0.5,
         ),
         headlineSmall: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF1E293B),
+          color: Color(0xFF0F172A),
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
@@ -185,7 +184,7 @@ class MainApp extends StatelessWidget {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: const Color(0xFF0F172A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
